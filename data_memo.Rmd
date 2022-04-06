@@ -1,5 +1,6 @@
 ---
 title: "Final Project Data Memo"
+subtitle: "STAT 301-3: Data Science 3"
 output: html_document
 ---
 
