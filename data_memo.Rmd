@@ -4,6 +4,13 @@ subtitle: "STAT 301-3: Data Science 3"
 output: html_document
 ---
 
+## Introduction 
+For the Final Project, we wanted to look into online shopper purchasing intentions whenever the customer opens an online website and what factors go into increasing or decreasing the probability of a direct purchase.
+https://archive.ics.uci.edu/ml/datasets/Online+Shoppers+Purchasing+Intention+Dataset#
+
+
+
+
 - Proposed project timeline: When do you expect to have your dataset loaded into R? When do you expect to start your analysis?
 
 - Simple overview of the dataset. What does the dataset document? How do you plan to collect it? (Is it a simple download, a webscrape, etc? Provide a citation.) How big is the dataset? What kinds of variables will you be dealing with? Any missingness? Do you need to join two or more sources of data together?
