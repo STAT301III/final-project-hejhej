@@ -3,3 +3,10 @@ title: "Final Project Data Memo"
 output: html_document
 ---
 
+- Proposed project timeline: When do you expect to have your dataset loaded into R? When do you expect to start your analysis?
+
+- Simple overview of the dataset. What does the dataset document? How do you plan to collect it? (Is it a simple download, a webscrape, etc? Provide a citation.) How big is the dataset? What kinds of variables will you be dealing with? Any missingness? Do you need to join two or more sources of data together?
+
+- Description of potential research questions. Are they predictive or inferential? (Should be predictive questions!) Are these questions best answered by a classification or regression-based approach? What is the response variable? 
+
+- Which variables do you suspect will be useful in modeling the response? Any difficulties you may encounter along the way: Is the data collection mechanism complicated? Is there significant missingness in the data?
