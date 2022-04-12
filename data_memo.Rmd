@@ -8,6 +8,10 @@ output: html_document
 For the Final Project, we wanted to look into online shopper purchasing intentions whenever the customer opens an online website and what factors go into increasing or decreasing the probability of a direct purchase.
 https://archive.ics.uci.edu/ml/datasets/Online+Shoppers+Purchasing+Intention+Dataset#
 
+```{r}
+shop <- read.csv(file = "C:/Users/hjpar/OneDrive/Desktop/STAT 301-3/final-project-hejhej/data/unprocessed/online_shoppers_intention.csv")
+shop
+```
 
 
 
