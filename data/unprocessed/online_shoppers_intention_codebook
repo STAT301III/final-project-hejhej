@@ -1,0 +1,37 @@
+# Numeric Variables
+Administrative (number of pages)
+- Number of pages visited by the visitor about account management
+Administrative duration (seconds) 
+- Total amount of time spent by the visitor on account management related pages
+Informational (number of pages)
+- Number of pages visited by the visitor about Web site, communication and address information of the shopping site 
+Informational duration  (seconds)
+- Total amount of time spent by the visitor on informational pages
+Product related 
+- Number of pages visited by visitor about product related pages
+Product related duration (in seconds)
+- Total amount of time spent by the visitor on product related 
+Bounce rate 
+- Average bounce rate value of the pages visited by the visitor 
+Exit rate 
+- Average exit rate value of the pages visited by the visitor
+Page value 
+- Average page value of the pages visited by the visitor 
+Special day 
+- Closeness of the site visiting time to a special day 
+
+#Categorical Variables
+OperatingSystems 
+- Operating system of the visitor
+Browser Browser of the visitor 
+- Region Geographic region from which the session has been started by the visitor 
+TrafficType 
+- Traffic source by which the visitor has arrived at the Web site (e.g., banner, SMS, direct)
+VisitorType
+- ‘‘New Visitor,’’ ‘‘Returning Visitor,’’ and ‘‘Other’’ 
+Weekend 
+- Boolean value indicating whether the date of the visit is weekend
+Month
+- Month value of the visit date
+Revenue 
+- Class label indicating whether the visit has been finalized with a transaction
