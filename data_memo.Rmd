@@ -7,21 +7,28 @@ output: html_document
 ## Introduction 
 For the Final Project, we wanted to look into online shopper purchasing intentions whenever the customer opens an online website and what factors go into increasing or decreasing the probability of a direct purchase.
 
+<br>
 
-- Proposed project timeline: When do you expect to have your dataset loaded into R? When do you expect to start your analysis?
+## Data Memo 
 
-**A**: Data can be scrapped from this site below. It is  We expect to start our analysis fairly soon. 
+**Q**: Proposed project timeline: When do you expect to have your dataset loaded into R? When do you expect to start your analysis?
 
-https://archive.ics.uci.edu/ml/datasets/Online+Shoppers+Purchasing+Intention+Dataset
+**A**: The data has already been loaded, so we expect to start our analysis fairly soon. 
 
-- Simple overview of the dataset. What does the dataset document? How do you plan to collect it? (Is it a simple download, a webscrape, etc? Provide a citation.) How big is the dataset? What kinds of variables will you be dealing with? Any missingness? Do you need to join two or more sources of data together?
+<br>
 
-**A**: The dataset documents data that allows users to determine the purchasing intentions of online shoppers through multiple information sources on browsers. There is data that will help us be able to predict purchase intention through analyzing past behavior and history of the customers. This would be valuable information for sellers as well as they would want to know what attracts customers to purchase goods. There are a total of 12,330 observations across 18 total columns. The 18 variables are split into 8 categorical variables and 10 numerical variables. There does not appear to be any missingness.
+**Q**: Simple overview of the dataset. What does the dataset document? How do you plan to collect it? (Is it a simple download, a webscrape, etc? Provide a citation.) How big is the dataset? What kinds of variables will you be dealing with? Any missingness? Do you need to join two or more sources of data together?
 
-- Description of potential research questions. Are they predictive or inferential? (Should be predictive questions!) Are these questions best answered by a classification or regression-based approach? What is the response variable? 
+**A**: The dataset documents data that allows us to determine the purchasing intentions of online shoppers through multiple information sources on browsers. There is data that will help us be able to predict purchase intention through analyzing past behavior and history of the customers. This would be valuable information for sellers as well as they would want to know what attracts customers to purchase goods. We will be downloading the data from the UCI Machine Learning Repository (https://archive.ics.uci.edu/ml/datasets/Online+Shoppers+Purchasing+Intention+Dataset). There are a total of 12,330 observations across 18 total columns. The 18 variables are split into 8 categorical variables and 10 numerical variables. There does not appear to be any missingness.
 
-**A**: Potential research questions include what factors are involved/important in determining how and what persuades customers to purchase items online? The response variable would be Revenue.These would be predictive questions that are best answered/approaced by a classification based approach.  
+<br>
 
-- Which variables do you suspect will be useful in modeling the response? Any difficulties you may encounter along the way: Is the data collection mechanism complicated? Is there significant missingness in the data?
+**Q**: Description of potential research questions. Are they predictive or inferential? (Should be predictive questions!) Are these questions best answered by a classification or regression-based approach? What is the response variable? 
 
-**A**: There does not seem to be big difficulties in data collection. There is no significant missingness in the data. Some of other predictive variables we suspect to use include: TrafficType, VisitorType, Weekend, SpecialDay, Region, Browser, OperatingSystems, and etc. 
+**A**: Potential research questions include what factors are involved/important in determining how and what persuades customers to purchase items online? The response variable would be Revenue.These would be predictive questions that are best answered/approached by a classification based approach.
+
+<br>
+
+**Q**: Which variables do you suspect will be useful in modeling the response? Any difficulties you may encounter along the way: Is the data collection mechanism complicated? Is there significant missingness in the data?
+
+**A**: There does not seem to be big difficulties in data collection. There is no significant missingness in the data. Some of other predictive variables we suspect to use include: TrafficType, VisitorType, Weekend, SpecialDay, Region, Browser, OperatingSystems, and etc. The main difficulty we might have to deal with is the data imbalance between the two outcomes (true and false).
