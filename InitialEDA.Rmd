@@ -1,0 +1,12 @@
+---
+title: "Initial EDA"
+subtitle: "STAT 301-3: Data Science III"
+output: html_document
+date: '2022-05-01'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Initial EDA
