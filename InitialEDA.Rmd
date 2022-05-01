@@ -6,7 +6,115 @@ date: '2022-05-01'
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
-## Initial EDA
+```{r,message=FALSE, warning=FALSE}
+library(readr)
+library(skimr)
+library(ggplot2)
+library(tidyverse)
+library(patchwork)
+```
+
+### 1. Initial overview of data
+
+```{r}
+shop_dat <- 
+  read_csv("data/unprocessed/online_shoppers_intention.csv") %>% 
+  janitor::clean_names()
+```
+
+#### Date Collection & Cleaning
+
+
+#### Initial Skim
+
+(Number of observations (n), number of features (p), missingness)
+
+```{r}
+skim(shop_dat)
+```
+
+
+### 2. Essential Findings (Important or Interesting)
+#### Univariate investigation of response variable: Revenue
+
+```{r}
+ggplot(shop_dat, aes(revenue)) +
+  geom_bar()
+```
+
+#### Univariate investigation of important predictor variables
+
+```{r}
+ggplot(shop_dat, aes(visitor_type)) +
+  geom_bar()
+
+ggplot(shop_dat, aes(month)) +
+  geom_bar()
+
+ggplot(shop_dat, aes(weekend)) +
+  geom_bar()
+
+ggplot(shop_dat, aes(special_day)) +
+  geom_bar()
+
+ggplot(shop_dat, aes(bounce_rates)) +
+  geom_histogram()
+
+ggplot(shop_dat, aes(exit_rates)) +
+  geom_histogram()
+```
+
+#### Relationships between Revenue & predictor variables
+
+```{r}
+p1 <- ggplot(data = shop_dat, mapping = aes(x = revenue)) +
+  geom_bar(mapping = aes(fill = visitor_type)) + 
+  ggtitle("Revenue on visitor type") + 
+  xlab("Revenue") + 
+  ylab("Visitors") + 
+  theme(legend.position = "bottom")
+
+p2 <- ggplot(data = shop_dat, mapping = aes(x = revenue)) +
+  geom_bar(mapping = aes(fill = weekend)) + 
+  ggtitle("Revenue on weekend status") + 
+  xlab("Revenue") + ylab("Visitors") + 
+  theme(legend.position = "bottom")
+
+(p1 + p2)
+```
+
+#### Relationships among predictor variables
+
+```{r}
+# informational duration & product related duration
+shop_dat %>% 
+  ggplot(aes(x = informational_duration, y = product_related_duration)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth()
+
+# exit rate & bounce rate
+ggplot(data = shop_dat, mapping = aes(x = bounce_rates, y = exit_rates)) +
+  geom_point(mapping = aes(color = revenue)) + geom_smooth(se = TRUE, alpha = 0.5) +
+  theme_light() + 
+  ggtitle("Relationship between Exit Rates and Bounce Rates") + 
+  xlab("Exit Rates") + 
+  ylab("Bounce Rates")
+```
+
+
+### 3.Secondary Findings
+
+#### Other Explorations
+
+(Standard variable explorations for the domain area that are unsurprising and mainly conducted out of convention.)
+
+#### Other Findings
+
+(Findings that don't seem interesting or important, but show some potential.)
+
+
+
+
