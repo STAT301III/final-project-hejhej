@@ -1,7 +1,9 @@
 ---
 title: "Initial EDA"
 subtitle: "STAT 301-3: Data Science III"
-output: html_document
+output: 
+  html_document: 
+    code_folding: hide
 date: '2022-05-01'
 ---
 
@@ -10,9 +12,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 ```{r,message=FALSE, warning=FALSE}
-library(readr)
 library(skimr)
-library(ggplot2)
 library(tidyverse)
 library(patchwork)
 ```
@@ -27,6 +27,9 @@ shop_dat <-
 
 #### Date Collection & Cleaning
 
+We obtained the data from University of California Irvine's machine learning repository. The dataset was collected by a faculty researcher and information technology specialist in Turkey from an online bookstore built on an osCommerce platform.
+
+No cleaning was needed for the EDA.
 
 #### Initial Skim
 
@@ -36,8 +39,8 @@ shop_dat <-
 skim(shop_dat)
 ```
 
-
 ### 2. Essential Findings (Important or Interesting)
+
 #### Univariate investigation of response variable: Revenue
 
 ```{r}
@@ -104,17 +107,32 @@ ggplot(data = shop_dat, mapping = aes(x = bounce_rates, y = exit_rates)) +
   ylab("Bounce Rates")
 ```
 
-
 ### 3.Secondary Findings
 
 #### Other Explorations
 
 (Standard variable explorations for the domain area that are unsurprising and mainly conducted out of convention.)
 
+Standard explorations of variables that are included in our dataset:
+
+-   "Our research has shown that, even by using the most basic information (e.g. **event type**), it is possible to reliably predict conversion based on simple and lightweight features in a variety of scenarios." Event types include the following: "*page view* is triggered when the final user loads any page in the website; a*detail* event is triggered when the user visits a specific product page, i.e. a page displaying one particular product; an*add/remove* event is triggered when a product is added/removed from the cart; a*purchase* event is triggered when the user actually buys the products in the cart; finally, a *click* event is triggered when some results from a search query are clicked e.g. user searches for "shoes" using the e-commerce search bar, several products are returned and the user clicks on the second product triggering a *click* event."
+    -   Requena, B., Cassani, G., Tagliabue, J. *et al.* Shopper intent prediction from clickstream e-commerce data with minimal browsing information. *Sci Rep* **10,** 16983 (2020). <https://doi.org/10.1038/s41598-020-73622-y>
+-   "We found that "**Session Duration**" is the most important feature that gives critical signal for predicting users' purchase intention."
+    -   Esmeli, R., Bader-El-Den, M. & Abdullahi, H. Towards early purchase intention prediction in online session based retailing systems. *Electron Markets* **31,** 697--715 (2021). <https://doi.org/10.1007/s12525-020-00448-x>
+-   The greatest predictors of generating revenue are: "**new visitor**, **visitors who has low bounce rate**, **month sales in November and May**, **visitor who spent more time in product related.**"
+    -   Muda, Muhammad & Iswari, Radha & Ahsan, Muhammad. (2020). Prediction of Online Shopper's Purchasing Intention Using Binary Logistic Regression, Decision Tree, and Random Forest. 10.13140/RG.2.2.16567.55209.
+
+Standard explorations of variables that are not included in our dataset (this information can help us indirectly):
+
+-   "It is found that **online trust** is an important factor affecting consumers' online search intention, and the most important factor for consumers' online **purchase intention is their perceived benefits of online shopping**. At the same time, there is a positive relationship between **online search intention** and purchase intention."
+    -   Deng W, Su T, Zhang Y, Tan C. Factors Affecting Consumers' Online Choice Intention: A Study Based on Bayesian Network. *Front Psychol*. 2021;12:731850. Published 2021 Oct 20. <doi:10.3389/fpsyg.2021.731850>
+-   "**Subjective norm** and **perceived usefulness** significant positively influence online purchase intention."
+    -   Jin Lim, Abdullah Osman, Shahrul Nizam Salahuddin, Abdul Rahim Romle, Safizal Abdullah, Factors Influencing Online Shopping Behavior: The Mediating Role of Purchase Intention, Procedia Economics and Finance, Volume 35, 2016, Pages 401-410, ISSN 2212-5671, [https://doi.org/10.1016/S2212-5671(16)00050-2.](https://doi.org/10.1016/S2212-5671(16)00050-2.)
+
 #### Other Findings
 
 (Findings that don't seem interesting or important, but show some potential.)
 
+-   " '**Min Popularity**' feature that indicates the value of minimum popularity of the browsed items in the session is found as having the lowest importance to classify users' purchase intention."
 
-
-
+    -   Esmeli, R., Bader-El-Den, M. & Abdullahi, H. Towards early purchase intention prediction in online session based retailing systems. *Electron Markets* **31,** 697--715 (2021). <https://doi.org/10.1007/s12525-020-00448-x>
