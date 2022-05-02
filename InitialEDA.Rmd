@@ -133,6 +133,6 @@ Standard explorations of variables that are not included in our dataset (this in
 
 (Findings that don't seem interesting or important, but show some potential.)
 
--   " '**Min Popularity**' feature that indicates the value of minimum popularity of the browsed items in the session is found as having the lowest importance to classify users' purchase intention."
+-   '**Min Popularity**' feature that indicates the value of minimum popularity of the browsed items in the session is found as having the lowest importance to classify users' purchase intention."
 
     -   Esmeli, R., Bader-El-Den, M. & Abdullahi, H. Towards early purchase intention prediction in online session based retailing systems. *Electron Markets* **31,** 697--715 (2021). <https://doi.org/10.1007/s12525-020-00448-x>
