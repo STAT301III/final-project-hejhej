@@ -49,6 +49,8 @@ skim(shop_dat)
 
 #### Univariate investigation of response variable: Revenue
 
+In the variable `revenue`, TRUE means that the visitor made a purchase, FALSE indicates no purchase was made. There is significant data imbalance between the two results of our target variable. We expect to deal with this problem with resampling and feature engineering. 
+
 ```{r}
 ggplot(shop_dat, aes(revenue)) +
   geom_bar()
