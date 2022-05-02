@@ -25,19 +25,25 @@ shop_dat <-
   janitor::clean_names()
 ```
 
+<br>
+
 #### Date Collection & Cleaning
 
 We obtained the data from University of California Irvine's machine learning repository. The dataset was collected by a faculty researcher and information technology specialist in Turkey from an online bookstore built on an osCommerce platform.
 
 No cleaning was needed for the EDA.
 
+<br>
+
 #### Initial Skim
 
-(Number of observations (n), number of features (p), missingness)
+The dataset contains 12330 observations, 18 features, and no missingness.
 
 ```{r}
 skim(shop_dat)
 ```
+
+<br>
 
 ### 2. Essential Findings (Important or Interesting)
 
@@ -48,7 +54,11 @@ ggplot(shop_dat, aes(revenue)) +
   geom_bar()
 ```
 
+<br>
+
 #### Univariate investigation of important predictor variables
+
+The first four plots show that there are important data imbalance within the categorical variables that will require feature engineering. The last two histograms show that both exit rates and bounce rates are positively skewed, therefore will also require feature engineering steps.
 
 ```{r}
 ggplot(shop_dat, aes(visitor_type)) +
@@ -70,7 +80,11 @@ ggplot(shop_dat, aes(exit_rates)) +
   geom_histogram()
 ```
 
+<br>
+
 #### Relationships between Revenue & predictor variables
+
+These plots show the impact of loyal customers, especially throughout the weekend. It displays whether or not the companies had good retention rates with the customers and how much revenue they create. New customers at a frequent rate always mean higher revenue. According to the plots, more revenue was made during the weekday, being led by new customers instead of returning ones.
 
 ```{r}
 p1 <- ggplot(data = shop_dat, mapping = aes(x = revenue)) +
@@ -89,10 +103,11 @@ p2 <- ggplot(data = shop_dat, mapping = aes(x = revenue)) +
 (p1 + p2)
 ```
 
-These plots show the impact of loyal customers, especially throughout the weekend. It displays whether or not the companies had good retention rates with the customers and how much revenue they create. New customers at a frequent rate always mean higher revenue. According to the plots, more revenue was made during the weekday, being led by new customers instead of returning ones.
+<br>
 
 #### Relationships among predictor variables
 
+In this graph, we examined the relationship between time spent on the information page of the product vs time spent on pages that displayed product related items. This was hard to predict as not every customer is looking to buy an item related to the original product they intended on purchasing. It showed a rather unstable chart as though it ends on a positive relationship, there are small dips, especially before 1000 seconds for `Information_Duration`.
 ```{r}
 # informational duration & product related duration
 shop_dat %>% 
@@ -100,7 +115,8 @@ shop_dat %>%
   geom_point(alpha = 0.5) +
   geom_smooth()
 ```
-In this graph, we examined the relationship between time spent on the information page of the product vs time spent on pages that displayed product related items. This was hard to predict as not every customer is looking to buy an item related to the original product they intended on purchasing. It showed a rather unstable chart as though it ends on a positive relationship, there are small dips, especially before 1000 seconds for `Information_Duration`.
+
+Bounce rate is the overall percentage of visitors who enter the site from that page and leave without setting off any additional requests to the analytics server. Exit rates show the percentage of visitors on the site where they exit the website to a different website. The relationship showed here displays a positive one, where as exit rates increase, bounce rates increase. This could be the case as a high bounce rate means that user satisfaction was low whether it was due to site errors or very being slow. A high exit rate could mean lower performing sectors for the item, leading to customers leaving and never coming back. It is highly likely that these two are correlated.
 
 ```{r}
 # exit rate & bounce rate
@@ -112,22 +128,24 @@ ggplot(data = shop_dat, mapping = aes(x = bounce_rates, y = exit_rates)) +
   ylab("Bounce Rates")
 ```
 
-Bounce rate is the overall percentage of visitors who enter the site from that page and leave without setting off any additional requests to the analytics server. Exit rates show the percentage of visitors on the site where they exit the website to a different website. The relationship showed here displays a positive one, where as exit rates increase, bounce rates increase. This could be the case as a high bounce rate means that user satisfaction was low whether it was due to site errors or very being slow. A high exit rate could mean lower performing sectors for the item, leading to customers leaving and never coming back. It is highly likely that these two are correlated.
+<br>
 
-### 3.Secondary Findings
+### 3. Secondary Findings
 
 #### Other Explorations
-
-(Standard variable explorations for the domain area that are unsurprising and mainly conducted out of convention.)
 
 Standard explorations of variables that are included in our dataset:
 
 -   "Our research has shown that, even by using the most basic information (e.g. **event type**), it is possible to reliably predict conversion based on simple and lightweight features in a variety of scenarios." Event types include the following: "*page view* is triggered when the final user loads any page in the website; a*detail* event is triggered when the user visits a specific product page, i.e. a page displaying one particular product; an*add/remove* event is triggered when a product is added/removed from the cart; a*purchase* event is triggered when the user actually buys the products in the cart; finally, a *click* event is triggered when some results from a search query are clicked e.g. user searches for "shoes" using the e-commerce search bar, several products are returned and the user clicks on the second product triggering a *click* event."
     -   Requena, B., Cassani, G., Tagliabue, J. *et al.* Shopper intent prediction from clickstream e-commerce data with minimal browsing information. *Sci Rep* **10,** 16983 (2020). <https://doi.org/10.1038/s41598-020-73622-y>
+    
 -   "We found that "**Session Duration**" is the most important feature that gives critical signal for predicting users' purchase intention."
     -   Esmeli, R., Bader-El-Den, M. & Abdullahi, H. Towards early purchase intention prediction in online session based retailing systems. *Electron Markets* **31,** 697--715 (2021). <https://doi.org/10.1007/s12525-020-00448-x>
+    
 -   The greatest predictors of generating revenue are: "**new visitor**, **visitors who has low bounce rate**, **month sales in November and May**, **visitor who spent more time in product related.**"
     -   Muda, Muhammad & Iswari, Radha & Ahsan, Muhammad. (2020). Prediction of Online Shopper's Purchasing Intention Using Binary Logistic Regression, Decision Tree, and Random Forest. 10.13140/RG.2.2.16567.55209.
+
+<br>
 
 Standard explorations of variables that are not included in our dataset (this information can help us indirectly):
 
@@ -136,10 +154,9 @@ Standard explorations of variables that are not included in our dataset (this in
 -   "**Subjective norm** and **perceived usefulness** significant positively influence online purchase intention."
     -   Jin Lim, Abdullah Osman, Shahrul Nizam Salahuddin, Abdul Rahim Romle, Safizal Abdullah, Factors Influencing Online Shopping Behavior: The Mediating Role of Purchase Intention, Procedia Economics and Finance, Volume 35, 2016, Pages 401-410, ISSN 2212-5671, [https://doi.org/10.1016/S2212-5671(16)00050-2.](https://doi.org/10.1016/S2212-5671(16)00050-2.)
 
+<br>
+
 #### Other Findings
 
-(Findings that don't seem interesting or important, but show some potential.)
-
 -   '**Min Popularity**' feature that indicates the value of minimum popularity of the browsed items in the session is found as having the lowest importance to classify users' purchase intention."
-
     -   Esmeli, R., Bader-El-Den, M. & Abdullahi, H. Towards early purchase intention prediction in online session based retailing systems. *Electron Markets* **31,** 697--715 (2021). <https://doi.org/10.1007/s12525-020-00448-x>
