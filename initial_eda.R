@@ -58,3 +58,8 @@ shopper_dat %>%
   mutate(revenue = as.factor(revenue)) %>% 
   ggplot(aes(month, fill = revenue)) +
   geom_bar(position = "fill")
+
+shopper_dat %>% 
+  mutate(revenue = as.factor(revenue)) %>% 
+  ggplot(aes(month, fill = revenue)) +
+  geom_bar()
