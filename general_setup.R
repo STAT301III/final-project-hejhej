@@ -1,80 +1,34 @@
 # Load package(s) ----
 library(tidymodels)
 library(tidyverse)
-library(lubridate)
-
-# Handle common conflicts
 tidymodels_prefer()
-
-# Seed
 set.seed(3013)
 
-# Load data ----
-shopper_dat <- read_csv("data/unprocessed/online_shoppers_intention.csv") %>% 
+# Load & clean data
+shopper_dat <- read_csv("data/unprocessed/online_shopper_intention.csv") %>% 
+  janitor::clean_names() %>% 
   mutate(
-    Revenue = as.numeric(Revenue)
-  ) %>% 
-  janitor::clean_names()
-
-# Data checks ----
-# Outcome/target variable
-
-shopper_dat %>% 
-  mutate(revenue = as.factor(revenue)) %>% 
-  ggplot(aes(revenue)) +
-  geom_bar()
-
-# check missingness & look for extreme issues
-naniar::miss_var_summary(shopper_dat)
-
-# EDA ----
+    month = as.factor(month),
+    weekend = as.factor(weekend),
+    visitor_type = as.factor(visitor_type),
+    revenue = as.factor(revenue)
+  )
 
 
-shopper_dat %>%
-  select_if(is.numeric) %>%
-  cor() %>%
-  corrplot::corrplot()
+# Split & fold data 
+shopper_split <- initial_split(shopper_dat, prop = 0.7, strata = revenue)
 
-shopper_dat %>% 
-  mutate(revenue = as.factor(revenue)) %>% 
-  ggplot(aes(operating_systems, fill = revenue)) +
-  geom_bar(position = "fill")
+shopper_train <- training(shopper_split)
+shopper_test <- testing(shopper_split)
 
-shopper_dat %>% 
-  mutate(revenue = as.factor(revenue)) %>% 
-  ggplot(aes(browser, fill = revenue)) +
-  geom_bar(position = "fill")
-
-shopper_dat %>% 
-  mutate(revenue = as.factor(revenue)) %>% 
-  ggplot(aes(traffic_type, fill = revenue)) +
-  geom_bar(position = "fill")
-
-shopper_dat %>% 
-  mutate(revenue = as.factor(revenue)) %>% 
-  ggplot(aes(visitor_type, fill = revenue)) +
-  geom_bar(position = "fill")
-
-shopper_dat %>% 
-  mutate(revenue = as.factor(revenue)) %>% 
-  ggplot(aes(weekend, fill = revenue)) +
-  geom_bar(position = "fill")
-
-shopper_dat %>% 
-  mutate(revenue = as.factor(revenue)) %>% 
-  ggplot(aes(month, fill = revenue)) +
-  geom_bar(position = "fill")
+shopper_folds <- vfold_cv(shopper_dat, v = 5, repeats = 3, strata = revenue)
 
 
-
-# Folds ---- 
-folds <- vfold_cv(shopper_dat, v = 5, repeats = 3, strata = revenue)
-
-
-
+# Recipe
+shopper_recipe <- recipe(revenue ~ ., data = shopper_train) %>%  
+  step_novel(all_nominal_predictors())%>%
+  step_nzv(all_predictors()) %>%
+  step_normalize(all_numeric_predictors())
 
 # Save ----
-save(folds, file = "data/general_setup.rda")
-
-
-
+save(shopper_train, shopper_test, shopper_folds, shopper_recipe, file = "data/general_setup.rda")
