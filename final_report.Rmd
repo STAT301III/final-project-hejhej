@@ -1,0 +1,20 @@
+---
+title: "Final Report"
+author: "Joe Omatoi"
+date: '2022-06-06'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+-   hypothesis: flexible models perform better given the non-linear nature of relationships from corplot
+
+-   we covered a full range of model flexibility: inflexible (elastic net, knn, mars, ranger)
+
+-   variables: put everything and then run vip
+
+-   ensemble model
+
+-   
