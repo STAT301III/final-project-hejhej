@@ -5,7 +5,7 @@ tidymodels_prefer()
 set.seed(3013)
 
 # Load & clean data
-shopper_dat <- read_csv("data/unprocessed/online_shopper_intention.csv") %>% 
+shopper_dat <- read_csv("data/unprocessed/online_shoppers_intention.csv") %>% 
   janitor::clean_names() %>% 
   mutate(
     month = as.factor(month),

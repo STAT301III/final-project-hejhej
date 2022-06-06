@@ -11,8 +11,7 @@ tidymodels_prefer()
 set.seed(2022)
 
 # Load required objects ----
-load("model_info/loan_class_recipe.rda")
-load("model_info/loan_class_folds.rda")
+load("data/general_setup.rda")
 
 # Define model ----
 knn_model <- nearest_neighbor(
@@ -26,22 +25,22 @@ parameters(knn_model)
 
 # Set-up tuning grid ----
 knn_params <- parameters(knn_model) %>%
-  update(neighbors = neighbors(range = c(1,40)))
+  update(neighbors = neighbors(range = c(1,20)))
 
 # Define grid
-knn_grid <- grid_regular(knn_params, levels = 15)
+knn_grid <- grid_regular(knn_params, levels = 5)
 
 # Define workflow ----
 knn_workflow <- workflow() %>%
   add_model(knn_model) %>%
-  add_recipe(loan_class_recipe)
+  add_recipe(shopper_recipe)
 
 # Tuning/fitting ----
 knn_res <- knn_workflow %>%
   tune_grid(
-    resamples = loan_class_folds,
+    resamples = shopper_folds,
     grid = knn_grid
   )
 
 # Write out results and workflow
-save(knn_res, knn_workflow, file = "model_info/knn_res.rda")
+save(knn_res, knn_workflow, file = "results/knn_res.rda")
