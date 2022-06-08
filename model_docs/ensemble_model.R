@@ -7,18 +7,22 @@ library(stacks)
 tidymodels_prefer()
 
 # Load candidate model info ----
-load("model_info/rf_result.rda")
+load("results/rf_tune.rda")
+load("results/glmnet_res.rda")
+load("results/earth_res.rda")
+load("results/knn_res.rda")
 
 # Load split data object & get testing data
-load("data/shopper_split.rda")
+load("data/general_setup.rda")
 
 shopper_test <- shopper_split %>% testing()
 
 # Create data stack ----
 shopper_data_st <- stacks() %>% 
-  add_candidates(knn_res) %>% 
-  add_candidates(svm_res) %>% 
-  add_candidates(lin_reg_res)
+  add_candidates(glmnet_res) %>% 
+  # add_candidates(earth_res) %>% 
+  # add_candidates(knn_res) %>%
+  add_candidates(rf_tune)
 
 # Fit the stack ----
 # penalty values for blending (set penalty argument when blending)
@@ -29,10 +33,12 @@ set.seed(9876)
 
 # Save blended model stack for reproducibility & easy reference (Rmd report)
 shopper_model_st <-
-  shopper_data_stack %>%
-  blend_predictions()
+  shopper_data_st %>%
+  blend_predictions(penalty = blend_penalty)
 
 # Explore the blended model stack
+autoplot(shopper_model_st)
+autoplot(shopper_model_st, type = "members")
 autoplot(shopper_model_st, type = "weights")
 
 # fit to ensemble to entire training set ----
