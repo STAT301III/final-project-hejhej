@@ -45,4 +45,4 @@ knn_res <- knn_workflow %>%
   )
 
 # Write out results and workflow
-save(knn_res, knn_workflow, file = "results/knn_res.rda")
+save(knn_res, knn_workflow, file = "model_info/knn_res.rda")
