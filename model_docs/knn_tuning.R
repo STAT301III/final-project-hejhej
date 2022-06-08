@@ -3,6 +3,7 @@
 # Load package(s) ----
 library(tidyverse)
 library(tidymodels)
+library(dOMC)
 
 # Handle common conflicts
 tidymodels_prefer()
@@ -39,7 +40,8 @@ knn_workflow <- workflow() %>%
 knn_res <- knn_workflow %>%
   tune_grid(
     resamples = shopper_folds,
-    grid = knn_grid
+    grid = knn_grid,
+    control = stacks::control_stack_grid()
   )
 
 # Write out results and workflow
