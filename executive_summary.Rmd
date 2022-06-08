@@ -1,13 +1,110 @@
 ---
 title: "Executive Summary"
 output: html_document
+author: "Evelyn Long, Heejun Park, Joe Omatoi"
 date: '2022-06-08'
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
 ```
 
-## R Markdown
+```{r}
+# Load package(s) ----
+library(tidymodels)
+library(tidyverse)
+library(stacks)
+library(patchwork)
+# Handle common conflicts
+tidymodels_prefer()
+# Set seed
+set.seed(3013)
+# Load candidate model info ----
+load("results/rf_tune.rda")
+load("results/glmnet_res.rda")
+load("results/knn_res.rda")
+load("results/earth_res.rda")
+# Load split data object & get testing data
+load("data/general_setup.rda")
+```
 
+## Introduction
 
+In this executive summary, we will highlight four key findings in our project of fitting predictive classification models to the online shoppers purchase intention dataset.
+
+```{r}
+shopper_dat <-
+ read_csv("data/unprocessed/online_shoppers_intention.csv") %>%
+ janitor::clean_names()
+```
+
+## Finding 1: Corrplot show importance of page_value
+
+Looking at the correlation plot, we discovered the importance of page_value. It has a correlation of about 0.5 with revenue. But more importantly, we found that all the other variables have very weak linear correlations with revenue. Because of this, we hypothesized that flexible models would perform better since they capture nonlinear relationships between variables well.
+
+```{r}
+shopper_dat %>%
+  select_if(is.numeric) %>%
+  cor() %>%
+  corrplot::corrplot()
+```
+
+## Finding 2: Addressing Data Imbalance
+
+To tackle data imbalance, two primary steps we took were resampling and adding `step_novel(all_nominal_predictors())` in the recipe. First, we used K-fold cross validation and stratified random sampling to ensure that the distribution of target variable is similar to the original dataset.
+
+Next, we used `step_novel()`, which takes any new (previously unseen) factor levels and groups them into a new factor level called "new". Given data imbalance, this feature engineering step helps us address potential factor levels in the testing data that were not present in the training data.
+
+```{r}
+ggplot(shopper_dat, aes(revenue)) +
+ geom_bar()
+```
+
+## Finding 3: Addressing categorical variables
+
+An interesting observation is that of the four categorical variables we factored, `visitor_type` showed new information about conversion rates of whether or not they are new visitors or returning customers. We did not want to factor all the categorical variables because that would create too many levels, therefore, we deemed it was best to take the character variables with most impact and dates so that we can use it for model fitting.
+
+## Finding 4: Random Forest has the best performance
+
+The best performing model was the Random Forest model with an mtry value of 10 at an accuracy value of 0.903. That was the accuracy when fitted to the testing set. To look into whether or not we overfitted, we compared this value to the value we produced when fitted to the training set. The accuracy when fitted to the training set came out to be 0.904, showing that there was no severe over or underfitting.
+
+To go beyond the accuracy, in our ensemble model, we covered all mediums of flexibility from elastic net, knn, and ranger. As we alluded to in the first finding, `vip()` showed importance of the categorical variable `PageValues` as it shows the average value for a page that a user visited before landing on the goal page. The random forest model ultimately ended up performing well for the ensemble model, proving that the model performed the best out of all the models we tried. Some next steps we can think of in regards to improving the model includes more transformations of predictors, though we found that our current model with its transformations as is is a good fit to both training and testing sets.
+
+```{r}
+rbind(
+  # elastic net
+  glmnet_res %>% 
+    show_best(metric = "accuracy") %>% 
+    slice(1:1) %>% 
+    mutate(model = "elastic_net") %>% 
+    select(mean, model), 
+  # knn
+  knn_res %>% 
+    show_best(metric = "accuracy") %>% 
+    slice(1:1) %>% 
+    mutate(model = "knn") %>% 
+    select(mean, model), 
+  # rf
+  rf_tune %>% 
+    show_best(metric = "accuracy") %>% 
+    slice(1:1) %>% 
+    mutate(model = "rf") %>% 
+    select(mean, model),
+  # mars
+  earth_res %>% 
+    show_best(metric = "accuracy") %>% 
+    slice(1:1) %>% 
+    mutate(model = "mars") %>% 
+    select(mean, model) 
+) %>% 
+  select(model, mean) %>% 
+  rename(accuracy = mean) %>% 
+  arrange(desc(accuracy)) %>% 
+  gt::gt()
+```
+
+## GitHub Repo
+
+URL: https://github.com/STAT301III/final-project-hejhej.git

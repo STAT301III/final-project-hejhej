@@ -1,20 +1,358 @@
 ---
 title: "Final Report"
-author: "Joe Omatoi"
+author: "Evelyn Long, Heejun Park, Joe Omatoi"
 date: '2022-06-06'
-output: html_document
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+    code_folding: hide
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
 ```
 
--   hypothesis: flexible models perform better given the non-linear nature of relationships from corplot
+```{r}
+# Load package(s) ----
+library(tidymodels)
+library(tidyverse)
+library(stacks)
+library(patchwork)
+# Handle common conflicts
+tidymodels_prefer()
+# Set seed
+set.seed(3013)
+# Load candidate model info ----
+load("results/rf_tune.rda")
+load("results/glmnet_res.rda")
+load("results/knn_res.rda")
+load("results/earth_res.rda")
+# Load split data object & get testing data
+load("data/general_setup.rda")
+```
 
--   we covered a full range of model flexibility: inflexible (elastic net, knn, mars, ranger)
+# Long Form
 
--   variables: put everything and then run vip
+## Introduction
 
--   ensemble model
+The main goal of this project is to use a predictive classification
+model to predict the purchase intention of online shoppers. We fit four
+different model classes (random forest, KNN, elastic net, MARS) to the
+training set, and finally use an ensemble model which includes random
+forest, elastic net, and MARS. In this report, we describe our data
+collection, EDA, model setup, feature engineering, model fitting, and
+final selection processes.
 
--   
+When navigating our repository, Data and setup information can be found
+in the `data` folder. Model-related code can be found in the
+`model_docs` folder. Model result files can be found in the `results`
+folder.
+
+## Data Collection
+
+We obtained the data from University of California Irvine's machine
+learning repository. The dataset was collected by a faculty researcher
+and information technology specialist in Turkey from an online bookstore
+built on an osCommerce platform. The dataset documents data that allows
+us to determine the purchasing intentions of online shoppers through
+multiple information sources on browsers. There is data that will help
+us be able to predict purchase intention through analyzing past behavior
+and history of the customers. This would be valuable information for
+sellers as well as they would want to know what attracts customers to
+purchase goods. We will be downloading the data from the UCI Machine
+Learning Repository
+(<https://archive.ics.uci.edu/ml/datasets/Online+Shoppers+Purchasing+Intention+Dataset>).
+\## Exploratory Data Analysis (Explores outcome variable distribution.
+Assesses missing data patterns. Creates at least 2-3 plots or tables to
+explore relationships among variables. ) \### (ES) 1. Initial overview &
+Quality Check & Missingness We first read in the dataset and
+standardized naming conventions using the janitor package. Using naniar,
+and skimr, we find that the dataset contains 12330 observations, 18
+features, and no missingness.
+
+```{r, results=TRUE}
+shopper_dat <-
+ read_csv("data/unprocessed/online_shoppers_intention.csv") %>%
+ janitor::clean_names()
+
+skimr::skim(shopper_dat)
+ 
+naniar::miss_var_summary(shopper_dat) %>% 
+  gt::gt()
+```
+
+<br>
+
+### 2. Outcome variable: Revenue
+
+In the variable `revenue`, TRUE means that the visitor made a purchase,
+FALSE indicates no purchase was made. There is a significant data
+imbalance between the two results of our target variable. We expect to
+deal with this problem with resampling and feature engineering.
+
+```{r, results=TRUE}
+ggplot(shopper_dat, aes(revenue)) +
+ geom_bar()
+```
+
+<br>
+
+#### 3. Univariate investigation of important predictor variables
+
+The first four plots show that there are important data imbalances
+within the categorical variables that will require feature engineering.
+The last three histograms are all positively skewed, therefore will also
+require feature engineering steps.
+
+```{r, results=TRUE}
+ggplot(shopper_dat, aes(visitor_type)) +
+ geom_bar()
+ 
+ggplot(shopper_dat, aes(month)) +
+ geom_bar()
+ 
+ggplot(shopper_dat, aes(weekend)) +
+ geom_bar()
+ 
+ggplot(shopper_dat, aes(special_day)) +
+ geom_bar()
+ 
+ggplot(shopper_dat, aes(bounce_rates)) +
+ geom_histogram()
+ 
+ggplot(shopper_dat, aes(exit_rates)) +
+ geom_histogram()
+ 
+ggplot(shopper_dat, aes(page_values)) +
+ geom_histogram()
+```
+
+<br>
+
+### 3. Relationships between Revenue & predictor variables
+
+These plots show the impact of loyal customers, especially throughout
+the weekend. It displays whether or not the companies had good retention
+rates with the customers and how much revenue they create. New customers
+at a frequent rate always mean higher revenue. According to the plots,
+more revenue was made during the weekday, being led by new customers
+instead of returning ones.
+
+```{r, results=TRUE}
+p1 <- ggplot(data = shopper_dat, mapping = aes(x = revenue)) +
+ geom_bar(mapping = aes(fill = visitor_type)) +
+ ggtitle("Revenue on visitor type") +
+ xlab("Revenue") +
+ ylab("Visitors") +
+ theme(legend.position = "bottom")
+ 
+p2 <- ggplot(data = shopper_dat, mapping = aes(x = revenue)) +
+ geom_bar(mapping = aes(fill = weekend)) +
+ ggtitle("Revenue on weekend status") +
+ xlab("Revenue") + ylab("Visitors") +
+ theme(legend.position = "bottom")
+ 
+(p1 + p2)
+```
+
+<br>
+
+### 4. Relationships among predictor variables
+
+In this graph, we examined the relationship between time spent on the
+information page of the product vs time spent on pages that displayed
+product related items. This was hard to predict as not every customer is
+looking to buy an item related to the original product they intended on
+purchasing. It showed a rather unstable chart as though it ends on a
+positive relationship, there are small dips, especially before 1000
+seconds for `Information_Duration`.
+
+```{r, results=TRUE}
+# informational duration & product related duration
+shopper_dat %>%
+ ggplot(aes(x = informational_duration, y = product_related_duration)) +
+ geom_point(alpha = 0.5) +
+ geom_smooth()
+```
+
+Bounce rate is the overall percentage of visitors who enter the site
+from that page and leave without setting off any additional requests to
+the analytics server. Exit rates show the percentage of visitors on the
+site where they exit the website to a different website. The
+relationship showed here displays a positive one, where as exit rates
+increase, bounce rates increase. This could be the case as a high bounce
+rate means that user satisfaction was low whether it was due to site
+errors or very being slow. A high exit rate could mean lower performing
+sectors for the item, leading to customers leaving and never coming
+back. It is highly likely that these two are correlated.
+
+```{r, results=TRUE}
+# exit rate & bounce rate
+ggplot(data = shopper_dat, mapping = aes(x = bounce_rates, y = exit_rates)) +
+ geom_point(mapping = aes(color = revenue)) + geom_smooth(se = TRUE, alpha = 0.5) +
+ theme_light() +
+ ggtitle("Relationship between Exit Rates and Bounce Rates") +
+ xlab("Exit Rates") +
+ ylab("Bounce Rates")
+```
+
+<br>
+
+### (ES) 5. Corrplot
+
+```{r, results=TRUE}
+shopper_dat %>%
+  select_if(is.numeric) %>%
+  cor() %>%
+  corrplot::corrplot()
+```
+
+## Data Cleaning, Splitting, Resampling & Feature Engineering
+
+### Data Cleaning
+
+The dataset contains 10 numeric variables and 8 categorical variables,
+but four of the categorical variables are coded as numbers in the
+dataset. We decided to leave them as numerics, since converting them
+into factors can result in too many factor levels. We converted the
+other four categorical variables, which were originally also encoded as
+characters, into factors for model fitting.
+
+```{r}
+shopper_dat <- shopper_dat %>% 
+  mutate(
+    month = as.factor(month),
+    weekend = as.factor(weekend),
+    visitor_type = as.factor(visitor_type),
+    revenue = as.factor(revenue)
+  )
+```
+
+### Data Splitting & Resampling
+
+We decided to use a 70% proportion with the stratification of `revenue`,
+the outcome variable. This was done so that the test and train datasets
+could still resemble the original dataset as much as possible.
+
+We then used a V-fold cross-validation with 5 folds and 3 repeats to
+resample data by splitting the training data in 5 different sets. Then
+it would be repeated three times to get the mean statistic.
+
+```{r}
+shopper_split <- initial_split(shopper_dat, prop = 0.7, strata = revenue)
+ 
+shopper_train <- training(shopper_split)
+shopper_test <- testing(shopper_split)
+ 
+shopper_folds <- vfold_cv(shopper_dat, v = 5, repeats = 3, strata = revenue)
+```
+
+### Feature Engineering
+
+The recipe for each model differed based on the respective requirements.
+We used the following recipe for random forest and k-nearest neighbors:
+
+```{r class.source = 'fold-show'}
+shopper_recipe <- recipe(revenue ~ ., data = shopper_train) %>%  
+  step_novel(all_nominal_predictors())%>%
+  step_nzv(all_predictors()) %>%
+  step_normalize(all_numeric_predictors())
+```
+
+However, we modified it slightly for elastic net regression and MARS,
+which require all predictors to be numeric.
+```{r class.source = 'fold-show'}
+shopper_recipe <- 
+  recipe(formula = revenue ~ ., data = shopper_train) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_nzv(all_predictors()) %>%
+  step_normalize(all_numeric_predictors())
+```
+
+Through trial and error of including different subsets of the
+predictors, we found that changing the composition of predictors did not
+make any significant difference in the accuracy metrics.
+
+## Model Fitting
+
+The four models we have chosen to use are elastic net mode, random
+forest model, earth model, and k-nearest neighbors model. We then
+updated the tuning parameters for each of these models. We set specific
+ranges(upper and lower limits) to the models that needed fine
+adjustments and later followed with a tuning grid to make numerous
+possible combinations of tuning parameter values. We created workflows
+for each model and saved files in their respective R scripts to load
+into this long form output.
+
+### Tuning Parameters
+
+### Results Comparison
+
+```{r, results=TRUE}
+rbind(
+  # elastic net
+  glmnet_res %>% 
+    show_best(metric = "accuracy") %>% 
+    slice(1:1) %>% 
+    mutate(model = "elastic_net") %>% 
+    select(mean, model), 
+  # knn
+  knn_res %>% 
+    show_best(metric = "accuracy") %>% 
+    slice(1:1) %>% 
+    mutate(model = "knn") %>% 
+    select(mean, model), 
+  # rf
+  rf_tune %>% 
+    show_best(metric = "accuracy") %>% 
+    slice(1:1) %>% 
+    mutate(model = "rf") %>% 
+    select(mean, model),
+  # mars
+  earth_res %>% 
+    show_best(metric = "accuracy") %>% 
+    slice(1:1) %>% 
+    mutate(model = "mars") %>% 
+    select(mean, model) 
+) %>% 
+  select(model, mean) %>% 
+  rename(accuracy = mean) %>% 
+  arrange(desc(accuracy)) %>% 
+  gt::gt()
+```
+
+### Ensemble Model
+
+```{r, results=TRUE}
+load("results/shopper_model_st.rda")
+
+autoplot(shopper_model_st)
+autoplot(shopper_model_st, type = "weights")
+```
+
+### Fit optimal tuned model (rf) to training and test sets.
+
+```{r, results=TRUE}
+load("results/shopper_result.rda")
+shopper_result %>% 
+  accuracy(truth = revenue, estimate = .pred_class) %>% 
+  rename(accuracy = .estimate) %>% 
+  select(accuracy) %>% 
+  gt::gt()
+```
+
+## Conclusion
+This project explored a dataset about an e-commerce world that gives customers more access to products online through multiple platforms. Few of these platforms include spaces such as Amazon, eBay, or Etsy where consumers are thrown a lot of advertisements, marketing strategies, and hyperbole to gain the attention of the producer. To understand the e-commerce market and how people think before they commit to a purchase, we decided to look into this dataset to see what drives people’s intentions. The outcome variable is `revenue`, showing whether or not the visitor made a purchase online. 
+
+With the creation of a recipe that followed an initial Exploratory Data Analysis, we found crucial predictor variables such as: `PageValues`, `BounceRates`, `ExitRates`, and `VisitorType`. Using these predictor variables and the code folding, we used four models: Elastic Net, Random Forest, MARS, and K-Nearest Neighbor models. All of these models returned a respectable accuracy value, but random forest with an `mtry` value of 10 produced the winning model with an accuracy value of `0.904`. When applied to the testing set, we found that we had neither over or underfitted as the accuracy came out to be `0.903`. This gave confidence in our data cleaning/manipulation and recipe. 
+
+
+## GitHub Repo
+
+URL: https://github.com/STAT301III/final-project-hejhej.git

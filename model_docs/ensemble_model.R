@@ -9,7 +9,6 @@ tidymodels_prefer()
 # Load candidate model info ----
 load("results/rf_tune.rda")
 load("results/glmnet_res.rda")
-load("results/earth_res.rda")
 load("results/knn_res.rda")
 
 # Load split data object & get testing data
@@ -20,8 +19,7 @@ shopper_test <- shopper_split %>% testing()
 # Create data stack ----
 shopper_data_st <- stacks() %>% 
   add_candidates(glmnet_res) %>% 
-  # add_candidates(earth_res) %>% 
-  # add_candidates(knn_res) %>%
+  add_candidates(knn_res) %>%
   add_candidates(rf_tune)
 
 # Fit the stack ----
@@ -36,10 +34,17 @@ shopper_model_st <-
   shopper_data_st %>%
   blend_predictions(penalty = blend_penalty)
 
+save(shopper_model_st, file = "results/shopper_model_st.rda")
+
 # Explore the blended model stack
 autoplot(shopper_model_st)
 autoplot(shopper_model_st, type = "members")
 autoplot(shopper_model_st, type = "weights")
+
+shopper_model_st %>% 
+  show_best(metric = metric_set(accuracy))
+
+
 
 # fit to ensemble to entire training set ----
 shopper_fit <-

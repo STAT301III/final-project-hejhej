@@ -27,7 +27,7 @@ naniar::miss_var_summary(shopper_dat)
 shopper_dat %>%
   select_if(is.numeric) %>%
   cor() %>%
-  corrplot::corrplot()
+  corrplot::corrplot(method = "number")
 
 shopper_dat %>% 
   mutate(revenue = as.factor(revenue)) %>% 
