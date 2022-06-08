@@ -51,4 +51,4 @@ rf_tune <- rf_workflow %>%
   )
 
 # Write out results & workflow
-save(shopper_split, rf_workflow, rf_tune, file = "model_info/rf_tune2.rda")
+save(shopper_split, rf_workflow, rf_tune, file = "model_info/rf_tune.rda")

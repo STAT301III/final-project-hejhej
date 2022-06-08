@@ -18,4 +18,4 @@ shopper_result <- predict(rf_result, new_data = shopper_test %>% select(-survive
 shopper_result <- bind_cols(shopper_result, shopper_test %>% select(survived))
 accuracy(shopper_result, truth = survived, estimate = .pred_class)
 
-save(rf_workflow_tuned, rf_result, file = rf1.rda)
+save(rf_workflow_tuned, rf_result, file = "results/rf_result.rda")
